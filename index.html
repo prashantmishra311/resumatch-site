@@ -430,7 +430,7 @@ footer{border-top:1px solid var(--border);padding:48px 40px}
       </div>
       <div class="footer-col">
         <h4>Support</h4>
-        <a href="mailto:hello@resumatch.co">hello@resumatch.co</a>
+        <a href="mailto:hello@resumatch.fit">hello@resumatch.fit</a>
         <a href="#">Privacy Policy</a>
         <a href="#">Terms of Service</a>
       </div>
@@ -441,7 +441,7 @@ footer{border-top:1px solid var(--border);padding:48px 40px}
 
 <script>
 const API="https://resume-tailor-production-4318.up.railway.app";
-const EMAIL="demo@resumatch.com";
+const EMAIL="demo@resumatch.fitm";
 // TODO: Replace with your Razorpay key
 const RAZORPAY_KEY="rzp_test_XXXXXXXXXXXX";
 
@@ -533,7 +533,7 @@ document.getElementById('downloadBtn').addEventListener('click',()=>{
         if(!r.ok)throw 0;
         const bl=await r.blob(),u=URL.createObjectURL(bl),a=document.createElement('a');
         a.href=u;a.download='ResuMatch_Tailored_Resume.pdf';a.click();URL.revokeObjectURL(u);
-      }catch(e){alert('Download failed. Please contact hello@resumatch.co with your payment ID: '+response.razorpay_payment_id)}
+      }catch(e){alert('Download failed. Please contact hello@resumatch.fit with your payment ID: '+response.razorpay_payment_id)}
       btn.textContent='Pay \u20B929 & Download PDF';btn.disabled=false;
     },
     prefill:{},
