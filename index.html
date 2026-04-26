@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResuMatch — Tailor Your Resume to Any Job</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FAFAF8;
+  --bg-card: #FFFFFF;
+  --text: #1A1A1A;
+  --text-muted: #6B6B6B;
+  --text-light: #999999;
+  --accent: #D4A054;
+  --accent-hover: #C08E3F;
+  --border: #E8E6E1;
+  --border-light: #F0EEE9;
+  --success: #3A8A5C;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+  --shadow-lg: 0 4px 24px rgba(0,0,0,0.06);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== NAV ===== */
+nav {
+  position: fixed; top: 0; width: 100%; z-index: 100;
+  background: rgba(250,250,248,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-light);
+  padding: 16px 0;
+}
+.nav-inner {
+  max-width: 1100px; margin: 0 auto; padding: 0 32px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.logo {
+  font-family: 'Newsreader', serif;
+  font-size: 22px; font-weight: 600; color: var(--text);
+  text-decoration: none; letter-spacing: -0.5px;
+}
+.logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a {
+  color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+  background: var(--text); color: #fff !important; padding: 8px 20px;
+  border-radius: 8px; font-size: 13px !important; transition: opacity 0.2s;
+}
+.nav-cta:hover { opacity: 0.85; }
+
+/* ===== HERO ===== */
+.hero {
+  max-width: 1100px; margin: 0 auto; padding: 160px 32px 100px;
+  text-align: center;
+}
+.hero-badge {
+  display: inline-block; padding: 6px 16px; border-radius: 20px;
+  background: rgba(212,160,84,0.1); color: var(--accent);
+  font-size: 13px; font-weight: 600; margin-bottom: 24px;
+  letter-spacing: 0.5px;
+}
+.hero h1 {
+  font-family: 'Newsreader', serif;
+  font-size: clamp(40px, 6vw, 64px); font-weight: 600;
+  line-height: 1.1; letter-spacing: -1.5px;
+  margin-bottom: 20px; color: var(--text);
+}
+.hero h1 em {
+  font-style: italic; color: var(--accent);
+}
+.hero p {
+  font-size: 18px; color: var(--text-muted); max-width: 560px;
+  margin: 0 auto 40px; line-height: 1.7;
+}
+.hero-cta {
+  display: inline-block; background: var(--text); color: #fff;
+  padding: 14px 36px; border-radius: 10px; text-decoration: none;
+  font-weight: 600; font-size: 15px; transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.hero-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.18); }
+
+/* ===== STATS ===== */
+.stats {
+  max-width: 700px; margin: 0 auto 80px; padding: 0 32px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  background: var(--border); border-radius: var(--radius); overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.stat {
+  background: var(--bg-card); padding: 28px 20px; text-align: center;
+}
+.stat-num {
+  font-family: 'Newsreader', serif;
+  font-size: 32px; font-weight: 600; color: var(--text);
+}
+.stat-label {
+  font-size: 13px; color: var(--text-light); margin-top: 4px;
+}
+
+/* ===== WHY SECTION ===== */
+.why {
+  max-width: 1100px; margin: 0 auto; padding: 80px 32px;
+}
+.why h2 {
+  font-family: 'Newsreader', serif;
+  font-size: 36px; font-weight: 600; text-align: center;
+  margin-bottom: 12px; letter-spacing: -0.5px;
+}
+.why > p {
+  text-align: center; color: var(--text-muted); font-size: 16px;
+  margin-bottom: 48px; max-width: 500px; margin-left: auto; margin-right: auto;
+}
+.why-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+.why-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 32px 28px;
+  transition: box-shadow 0.3s;
+}
+.why-card:hover { box-shadow: var(--shadow-lg); }
+.why-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: rgba(212,160,84,0.1); display: flex;
+  align-items: center; justify-content: center;
+  margin-bottom: 16px; font-size: 20px;
+}
+.why-card h3 {
+  font-size: 16px; font-weight: 600; margin-bottom: 8px;
+}
+.why-card p {
+  font-size: 14px; color: var(--text-muted); line-height: 1.6;
+}
+
+/* ===== APP SECTION ===== */
+.app-section {
+  max-width: 1100px; margin: 0 auto; padding: 80px 32px 120px;
+}
+.app-section h2 {
+  font-family: 'Newsreader', serif;
+  font-size: 36px; font-weight: 600; text-align: center;
+  margin-bottom: 48px; letter-spacing: -0.5px;
+}
+
+.app-container {
+  max-width: 720px; margin: 0 auto;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 40px; box-shadow: var(--shadow-lg);
+}
+
+/* Steps */
+.step { display: none; }
+.step.active { display: block; }
+
+.step-indicator {
+  display: flex; justify-content: center; gap: 8px; margin-bottom: 36px;
+}
+.step-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border); transition: all 0.3s;
+}
+.step-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+
+.step-title {
+  font-family: 'Newsreader', serif;
+  font-size: 24px; font-weight: 600; margin-bottom: 8px;
+}
+.step-desc {
+  color: var(--text-muted); font-size: 14px; margin-bottom: 28px;
+}
+
+/* Upload */
+.upload-zone {
+  border: 2px dashed var(--border); border-radius: var(--radius);
+  padding: 48px 24px; text-align: center; cursor: pointer;
+  transition: all 0.3s; background: var(--bg);
+}
+.upload-zone:hover { border-color: var(--accent); background: rgba(212,160,84,0.03); }
+.upload-zone.dragover { border-color: var(--accent); background: rgba(212,160,84,0.06); }
+.upload-zone.uploaded { border-color: var(--success); border-style: solid; background: rgba(58,138,92,0.03); }
+.upload-icon { font-size: 36px; margin-bottom: 12px; }
+.upload-text { font-size: 15px; color: var(--text-muted); }
+.upload-text strong { color: var(--accent); }
+.file-name {
+  margin-top: 12px; font-size: 14px; font-weight: 600; color: var(--success);
+}
+
+/* Textarea */
+.jd-textarea {
+  width: 100%; min-height: 200px; padding: 16px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  line-height: 1.6; resize: vertical; background: var(--bg);
+  transition: border-color 0.2s; color: var(--text);
+}
+.jd-textarea:focus { outline: none; border-color: var(--accent); }
+.jd-textarea::placeholder { color: var(--text-light); }
+
+/* Style selector */
+.style-row {
+  display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap;
+}
+.style-btn {
+  padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--bg); cursor: pointer; font-size: 13px;
+  font-family: 'DM Sans', sans-serif; color: var(--text-muted);
+  transition: all 0.2s;
+}
+.style-btn:hover { border-color: var(--accent); }
+.style-btn.selected {
+  border-color: var(--accent); background: rgba(212,160,84,0.08);
+  color: var(--text); font-weight: 600;
+}
+
+/* Buttons */
+.btn-primary {
+  width: 100%; padding: 14px; border: none; border-radius: 10px;
+  background: var(--text); color: #fff; font-size: 15px;
+  font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s; margin-top: 24px;
+}
+.btn-primary:hover { opacity: 0.9; }
+.btn-primary:disabled {
+  background: var(--border); color: var(--text-light); cursor: not-allowed;
+}
+
+.btn-secondary {
+  width: 100%; padding: 14px; border: 1px solid var(--border);
+  border-radius: 10px; background: var(--bg-card); color: var(--text);
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all 0.2s; margin-top: 12px;
+}
+.btn-secondary:hover { border-color: var(--text); }
+
+/* Loading */
+.loading {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 60px 20px; text-align: center;
+}
+.spinner {
+  width: 40px; height: 40px; border: 3px solid var(--border);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 0.8s linear infinite; margin-bottom: 20px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { color: var(--text-muted); font-size: 15px; }
+
+/* Results */
+.results { text-align: center; }
+.score-display { margin: 32px 0; }
+.score-label { font-size: 13px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.score-row {
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+}
+.score-num {
+  font-family: 'Newsreader', serif;
+  font-size: 56px; font-weight: 600;
+}
+.score-before { color: var(--text-light); }
+.score-arrow { font-size: 24px; color: var(--text-light); }
+.score-after { color: var(--success); }
+.score-unit { font-size: 24px; }
+
+.result-message {
+  font-size: 15px; color: var(--text-muted); margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+/* Error */
+.error-box {
+  background: #FEF2F2; border: 1px solid #FECACA; border-radius: var(--radius);
+  padding: 16px; margin-top: 16px; color: #991B1B; font-size: 14px;
+  display: none;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  border-top: 1px solid var(--border-light);
+  padding: 40px 32px; text-align: center;
+  color: var(--text-light); font-size: 13px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .why-grid { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .app-container { padding: 24px; }
+  .hero { padding: 120px 20px 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">Resu<span>Match</span></a>
+    <div class="nav-links">
+      <a href="#why">Why</a>
+      <a href="#app">Tailor Now</a>
+      <a href="#app" class="nav-cta">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">AI-POWERED RESUME TAILORING</div>
+  <h1>Stop sending the<br><em>same resume</em> everywhere</h1>
+  <p>One resume doesn't fit all jobs. ResuMatch tailors your resume to each job description in seconds — so you pass ATS screening and land more interviews.</p>
+  <a href="#app" class="hero-cta">Tailor Your Resume →</a>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">75%</div>
+    <div class="stat-label">Resumes rejected by ATS</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">100+</div>
+    <div class="stat-label">Applications per job seeker</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">15s</div>
+    <div class="stat-label">To tailor with ResuMatch</div>
+  </div>
+</div>
+
+<!-- WHY -->
+<section class="why" id="why">
+  <h2>Why tailor every resume?</h2>
+  <p>Generic resumes get filtered out. Here's what changes when you match your resume to the job.</p>
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-icon">🎯</div>
+      <h3>Beat ATS filters</h3>
+      <p>Our AI rewrites your bullets using exact keywords from the job description. Same experience, better signal.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">⚡</div>
+      <h3>15 seconds, not 40 minutes</h3>
+      <p>Upload once, paste any JD, get a tailored PDF. Apply to 50 jobs in the time it used to take for 3.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">📄</div>
+      <h3>LaTeX-quality PDFs</h3>
+      <p>Your resume renders in professional LaTeX templates — the same typesetting used in academic papers and top-tier resumes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- APP -->
+<section class="app-section" id="app">
+  <h2>Try it now</h2>
+
+  <div class="app-container">
+    <!-- Step indicators -->
+    <div class="step-indicator">
+      <div class="step-dot active" data-step="1"></div>
+      <div class="step-dot" data-step="2"></div>
+      <div class="step-dot" data-step="3"></div>
+    </div>
+
+    <!-- STEP 1: Upload -->
+    <div class="step active" id="step1">
+      <div class="step-title">Upload your resume</div>
+      <div class="step-desc">We extract your experience, skills, and projects. Your data stays private.</div>
+      <div class="upload-zone" id="uploadZone">
+        <div class="upload-icon">📄</div>
+        <div class="upload-text">Drop your PDF here or <strong>click to browse</strong></div>
+        <div class="file-name" id="fileName"></div>
+      </div>
+      <input type="file" id="fileInput" accept=".pdf" hidden>
+      <div class="error-box" id="uploadError"></div>
+      <button class="btn-primary" id="uploadBtn" disabled>Upload & Extract</button>
+    </div>
+
+    <!-- STEP 2: JD -->
+    <div class="step" id="step2">
+      <div class="step-title">Paste the job description</div>
+      <div class="step-desc">Copy the full job listing — requirements, responsibilities, everything.</div>
+      <textarea class="jd-textarea" id="jdText" placeholder="Paste the complete job description here..."></textarea>
+      <div class="style-row">
+        <button class="style-btn selected" data-style="professional">Professional</button>
+        <button class="style-btn" data-style="student">Student</button>
+        <button class="style-btn" data-style="researcher">Researcher</button>
+        <button class="style-btn" data-style="consulting">Consulting</button>
+        <button class="style-btn" data-style="minimal">Minimal</button>
+      </div>
+      <div class="error-box" id="tailorError"></div>
+      <button class="btn-primary" id="tailorBtn" disabled>Tailor My Resume</button>
+    </div>
+
+    <!-- STEP 3: Loading -->
+    <div class="step" id="stepLoading">
+      <div class="loading">
+        <div class="spinner"></div>
+        <div class="loading-text" id="loadingText">Analyzing job description...</div>
+      </div>
+    </div>
+
+    <!-- STEP 4: Results -->
+    <div class="step" id="stepResults">
+      <div class="results">
+        <div class="step-title">Your tailored resume is ready</div>
+        <div class="score-display">
+          <div class="score-label">ATS Match Score</div>
+          <div class="score-row">
+            <div>
+              <div class="score-num score-before" id="scoreBefore">0</div>
+            </div>
+            <div class="score-arrow">→</div>
+            <div>
+              <div class="score-num score-after" id="scoreAfter">0</div>
+            </div>
+          </div>
+        </div>
+        <div class="result-message" id="resultMessage"></div>
+        <button class="btn-primary" id="downloadBtn">Download PDF</button>
+        <button class="btn-secondary" id="newTailorBtn">Tailor for another job →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>ResuMatch — Built for job seekers who refuse to send generic resumes.</p>
+</footer>
+
+<script>
+const API = "https://resume-tailor-production-4318.up.railway.app";
+const EMAIL = "demo@resumatch.com"; // placeholder for now
+
+let resumeId = null;
+let tailoringId = null;
+let selectedFile = null;
+let selectedStyle = "professional";
+
+// ===== STEP MANAGEMENT =====
+function showStep(stepId) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById(stepId).classList.add('active');
+
+  const stepNum = { step1: 1, step2: 2, stepLoading: 3, stepResults: 3 }[stepId];
+  document.querySelectorAll('.step-dot').forEach(d => {
+    d.classList.toggle('active', parseInt(d.dataset.step) <= stepNum);
+  });
+}
+
+// ===== FILE UPLOAD =====
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+const uploadBtn = document.getElementById('uploadBtn');
+
+uploadZone.addEventListener('click', () => fileInput.click());
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
+
+function handleFile(file) {
+  if (file.type !== 'application/pdf') {
+    showError('uploadError', 'Please upload a PDF file.');
+    return;
+  }
+  selectedFile = file;
+  uploadZone.classList.add('uploaded');
+  document.getElementById('fileName').textContent = '✓ ' + file.name;
+  uploadBtn.disabled = false;
+  hideError('uploadError');
+}
+
+// ===== UPLOAD & EXTRACT =====
+uploadBtn.addEventListener('click', async () => {
+  uploadBtn.disabled = true;
+  uploadBtn.textContent = 'Extracting...';
+
+  try {
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    const resp = await fetch(`${API}/extract?email=${EMAIL}`, {
+      method: 'POST', body: formData
+    });
+
+    if (!resp.ok) throw new Error(await resp.text());
+    const data = await resp.json();
+    resumeId = data.resume_id;
+    showStep('step2');
+  } catch (e) {
+    showError('uploadError', 'Extraction failed. Please try again.');
+    uploadBtn.disabled = false;
+  }
+  uploadBtn.textContent = 'Upload & Extract';
+});
+
+// ===== JD INPUT =====
+const jdText = document.getElementById('jdText');
+const tailorBtn = document.getElementById('tailorBtn');
+
+jdText.addEventListener('input', () => {
+  tailorBtn.disabled = jdText.value.trim().length < 50;
+});
+
+// ===== STYLE SELECTOR =====
+document.querySelectorAll('.style-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedStyle = btn.dataset.style;
+  });
+});
+
+// ===== TAILOR =====
+tailorBtn.addEventListener('click', async () => {
+  showStep('stepLoading');
+  updateLoading('Analyzing job description...');
+
+  try {
+    setTimeout(() => updateLoading('Tailoring your resume...'), 4000);
+    setTimeout(() => updateLoading('Calculating ATS match...'), 12000);
+    setTimeout(() => updateLoading('Generating PDF...'), 18000);
+
+    const resp = await fetch(`${API}/tailor/${resumeId}?email=${EMAIL}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jd_text: jdText.value, style: selectedStyle })
+    });
+
+    if (!resp.ok) throw new Error(await resp.text());
+    const data = await resp.json();
+    tailoringId = data.tailoring_id;
+
+    const before = Math.round(data.match_score_before.overall_score);
+    const after = Math.round(data.match_score_after.overall_score);
+
+    showStep('stepResults');
+    animateScore('scoreBefore', 0, before, 800);
+    animateScore('scoreAfter', 0, after, 1200);
+
+    const improvement = after - before;
+    document.getElementById('resultMessage').textContent =
+      `Your resume match improved by ${improvement} points. Keywords, skills, and experience bullets have been rewritten to align with this specific role.`;
+
+  } catch (e) {
+    showStep('step2');
+    showError('tailorError', 'Tailoring failed. Please try again.');
+  }
+});
+
+// ===== DOWNLOAD =====
+document.getElementById('downloadBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('downloadBtn');
+  btn.textContent = 'Preparing...';
+  btn.disabled = true;
+
+  try {
+    const resp = await fetch(`${API}/render/${tailoringId}`);
+    if (!resp.ok) throw new Error('Download failed');
+
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'ResuMatch_Tailored_Resume.pdf';
+    a.click(); URL.revokeObjectURL(url);
+  } catch (e) {
+    alert('Download failed. Please try again.');
+  }
+  btn.textContent = 'Download PDF';
+  btn.disabled = false;
+});
+
+// ===== NEW TAILOR =====
+document.getElementById('newTailorBtn').addEventListener('click', () => {
+  jdText.value = '';
+  tailorBtn.disabled = true;
+  showStep('step2');
+});
+
+// ===== HELPERS =====
+function animateScore(id, from, to, duration) {
+  const el = document.getElementById(id);
+  const start = performance.now();
+  function tick(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3); // ease out cubic
+    const current = Math.round(from + (to - from) * eased);
+    el.textContent = current + '%';
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function updateLoading(text) {
+  const el = document.getElementById('loadingText');
+  if (el) el.textContent = text;
+}
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.style.display = 'block';
+}
+
+function hideError(id) {
+  document.getElementById(id).style.display = 'none';
+}
+</script>
+</body>
+</html>
