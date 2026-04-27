@@ -516,20 +516,33 @@ tailorBtn.addEventListener('click',async()=>{
   }catch(e){clearInterval(iv);showStep('step2');showError('tailorError','Tailoring failed. Please try again.')}
 });
 
-// Payment + Download
+// Payment + Download (with verification)
 document.getElementById('downloadBtn').addEventListener('click',()=>{
   const options={
     key:RAZORPAY_KEY,
-    amount:2900, // ₹29 in paise
+    amount:2900,
     currency:"INR",
     name:"ResuMatch",
     description:"Tailored Resume Download",
     handler:async function(response){
-      // Payment successful — download PDF
       const btn=document.getElementById('downloadBtn');
-      btn.textContent='Downloading...';btn.disabled=true;
+      btn.textContent='Verifying payment...';btn.disabled=true;
       try{
-        const r=await fetch(`${API}/render/${tailoringId}`);
+        // Step 1: Verify payment on backend
+        const vr=await fetch(`${API}/payment/verify`,{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            razorpay_payment_id:response.razorpay_payment_id,
+            tailoring_id:tailoringId
+          })
+        });
+        if(!vr.ok)throw new Error('Verification failed');
+        const{download_token}=await vr.json();
+
+        // Step 2: Download PDF with verified token
+        btn.textContent='Downloading...';
+        const r=await fetch(`${API}/render/${tailoringId}?token=${download_token}`);
         if(!r.ok)throw 0;
         const bl=await r.blob(),u=URL.createObjectURL(bl),a=document.createElement('a');
         a.href=u;a.download='ResuMatch_Tailored_Resume.pdf';a.click();URL.revokeObjectURL(u);
@@ -539,8 +552,7 @@ document.getElementById('downloadBtn').addEventListener('click',()=>{
     prefill:{},
     theme:{color:"#C8622D"}
   };
-  const rzp=new Razorpay(options);
-  rzp.open();
+  new Razorpay(options).open();
 });
 
 document.getElementById('newTailorBtn').addEventListener('click',()=>{
