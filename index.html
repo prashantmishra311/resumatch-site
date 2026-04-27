@@ -569,8 +569,11 @@ tailorBtn.addEventListener('click',async()=>{
     animateScore('scoreBefore',0,before,900);
     animateScore('scoreAfter',0,after,1400);
     const diff=after-before;
-    document.getElementById('resultMessage').textContent=
-      `Your ATS match jumped ${diff} points. We rewrote your bullets using the job\u2019s exact keywords, reordered your skills by relevance, and optimized your summary for this role.`;
+    let msg;
+    if(diff>15) msg=`Your ATS match jumped ${diff} points. We rewrote your bullets using the job\u2019s exact keywords, reordered your skills by relevance, and optimized your summary for this role.`;
+    else if(diff>0) msg=`Your ATS match improved by ${diff} points. Your resume is now better aligned with this job\u2019s requirements.`;
+    else msg=`Your resume was already well-matched to this role. We\u2019ve fine-tuned the language and keyword placement for maximum ATS compatibility.`;
+    document.getElementById('resultMessage').textContent=msg;
   }catch(e){clearInterval(iv);showStep('step2');showError('tailorError','Tailoring failed. Please try again.')}
 });
 
