@@ -42,6 +42,11 @@ nav{position:fixed;top:0;width:100%;z-index:100;background:rgba(250,249,246,0.92
 .nav-cta{background:var(--accent)!important;color:#fff!important;padding:10px 24px;border-radius:10px;font-weight:600!important;transition:all 0.2s}
 .nav-cta:hover{filter:brightness(1.1);transform:translateY(-1px)}
 
+/* SUGGESTED */
+.user-badge{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-secondary);font-weight:500}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+.signout-link{font-size:12px;color:var(--text-muted);cursor:pointer;text-decoration:underline}
+
 /* HERO */
 .hero{max-width:860px;margin:0 auto;padding:180px 40px 60px;text-align:center}
 .hero h1{font-family:var(--font-display);font-size:clamp(44px,7vw,72px);font-weight:400;line-height:1.08;letter-spacing:-1px;margin-bottom:28px}
@@ -223,9 +228,9 @@ footer{border-top:1px solid var(--border);padding:48px 40px}
       <div class="logo-text">Resu<span>Match</span></div>
     </a>
     <div class="nav-links">
-      <a href="#reality">The Reality</a>
-      <a href="#how">How It Works</a>
-      <a href="#app" class="nav-cta">Tailor Now</a>
+        <a href="#reality">The Reality</a>
+        <a href="#how">How It Works</a>
+        <a id="authBtn" href="#app" class="nav-cta">Tailor Now</a>
     </div>
   </div>
 </nav>
@@ -338,6 +343,7 @@ footer{border-top:1px solid var(--border);padding:48px 40px}
   <div class="app-header">
     <h2>Try it now</h2>
     <p>Upload your resume and see the ATS score improvement — free. Pay only to download.</p>
+    <p style="font-size:14px;color:var(--text-muted);margin-top:8px" id="signInPrompt"><a href="https://resume-tailor-production-4318.up.railway.app/auth/login" style="color:var(--accent);font-weight:600;text-decoration:none">Sign in with Google</a> to save your tailoring history and access subscription plans.</p>
   </div>
   <div class="app-container">
     <div class="step-indicator">
@@ -441,7 +447,59 @@ footer{border-top:1px solid var(--border);padding:48px 40px}
 
 <script>
 const API="https://resume-tailor-production-4318.up.railway.app";
-const EMAIL="demo@resumatch.fitm";
+const EMAIL="demo@resumatch.fit";
+// ===== AUTH =====
+const AUTH_URL=`${API}/auth/login`;
+let currentUser=null;
+
+function checkAuth(){
+  // Check URL params (after Google redirect)
+  const params=new URLSearchParams(window.location.search);
+  const token=params.get('token');
+  const name=params.get('name');
+  const email=params.get('email');
+  
+  if(token){
+    localStorage.setItem('rm_token',token);
+    localStorage.setItem('rm_name',name);
+    localStorage.setItem('rm_email',email);
+    // Clean URL
+    window.history.replaceState({},document.title,window.location.pathname);
+  }
+  
+  // Check localStorage
+  const savedToken=localStorage.getItem('rm_token');
+  const savedName=localStorage.getItem('rm_name');
+  const savedEmail=localStorage.getItem('rm_email');
+  
+  if(savedToken){
+    currentUser={token:savedToken,name:savedName,email:savedEmail};
+    updateNavAuth();
+  }
+}
+
+function updateNavAuth(){
+  const btn=document.getElementById('authBtn');
+  if(currentUser){
+    const initial=currentUser.name?currentUser.name.charAt(0).toUpperCase():'U';
+    btn.outerHTML=`<div class="user-badge"><div class="user-avatar">${initial}</div>${currentUser.name.split(' ')[0]}<span class="signout-link" onclick="signOut()">Sign out</span></div>`;
+  }
+}
+
+function signOut(){
+  localStorage.removeItem('rm_token');
+  localStorage.removeItem('rm_name');
+  localStorage.removeItem('rm_email');
+  currentUser=null;
+  location.reload();
+}
+
+function getEmail(){
+  return currentUser?currentUser.email:EMAIL;
+}
+
+// Run on page load
+checkAuth();
 // TODO: Replace with your Razorpay key
 const RAZORPAY_KEY="rzp_live_SiE7aPoKh3BBr2";
 
@@ -475,7 +533,7 @@ uploadBtn.addEventListener('click',async()=>{
   uploadBtn.disabled=true;uploadBtn.textContent='Extracting your resume...';
   try{
     const fd=new FormData();fd.append('file',selectedFile);
-    const r=await fetch(`${API}/extract?email=${EMAIL}`,{method:'POST',body:fd});
+    const r=await fetch(`${API}/extract?email=${getEmail()}`,{method:'POST',body:fd});
     if(!r.ok)throw new Error();
     const d=await r.json();resumeId=d.resume_id;showStep('step2');
   }catch(e){showError('uploadError','Something went wrong. Please try again.');uploadBtn.disabled=false}
@@ -499,7 +557,7 @@ tailorBtn.addEventListener('click',async()=>{
   const msgs=['Reading the job description...','Identifying key requirements...','Rewriting your bullets...','Matching keywords to your experience...','Almost there...'];
   let i=0;const iv=setInterval(()=>{if(i<msgs.length)document.getElementById('loadingText').textContent=msgs[i++]},4000);
   try{
-    const r=await fetch(`${API}/tailor/${resumeId}?email=${EMAIL}`,{
+    const r=await fetch(`${API}/tailor/${resumeId}?email=${getEmail()}`,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({jd_text:jdText.value,style:selectedStyle})
     });
