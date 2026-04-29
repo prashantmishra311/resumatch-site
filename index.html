@@ -412,7 +412,7 @@ footer{border-top:1px solid var(--border);padding:48px 40px}
     <!-- STEP 4: Results + Paywall -->
     <div class="step" id="stepResults">
       <div class="results">
-        <div class="step-title">Your resume is ready</div>
+        <div class="step-title" id="resultTitle">Your resume is ready</div>
         <div class="score-display">
           <div class="score-label">ATS Match Score</div>
           <div class="score-row">
@@ -422,6 +422,7 @@ footer{border-top:1px solid var(--border);padding:48px 40px}
           </div>
         </div>
         <div class="result-msg" id="resultMessage"></div>
+        <div id="previewBox" style="display:none;background:var(--bg);border-radius:12px;padding:20px;margin:0 0 16px;text-align:left;font-size:13px;color:var(--text-secondary);line-height:1.65;font-style:italic;border-left:3px solid var(--accent)"></div>
         <div class="pay-prompt">
           <p>Download your tailored, ATS-optimized resume</p>
           <div class="pay-price">&#8377;29</div>
@@ -520,7 +521,7 @@ checkAuth();
 // TODO: Replace with your Razorpay key
 const RAZORPAY_KEY="rzp_live_SiE7aPoKh3BBr2";
 
-let resumeId=null,tailoringId=null,selectedFile=null,selectedStyle="professional";
+let resumeId=null,tailoringId=null,selectedFile=null,selectedStyle="professional",selectedFont="modern",selectedTemp=0.3;
 
 function showStep(id){
   document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
@@ -561,10 +562,24 @@ uploadBtn.addEventListener('click',async()=>{
 const jdText=document.getElementById('jdText'),tailorBtn=document.getElementById('tailorBtn');
 jdText.addEventListener('input',()=>{tailorBtn.disabled=jdText.value.trim().length<50});
 
-document.querySelectorAll('.style-btn').forEach(b=>{
+document.querySelectorAll('.style-btn:not(.font-btn):not(.temp-btn)').forEach(b=>{
   b.addEventListener('click',()=>{
-    document.querySelectorAll('.style-btn').forEach(x=>x.classList.remove('selected'));
+    document.querySelectorAll('.style-btn:not(.font-btn):not(.temp-btn)').forEach(x=>x.classList.remove('selected'));
     b.classList.add('selected');selectedStyle=b.dataset.style;
+  });
+});
+
+document.querySelectorAll('.font-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.font-btn').forEach(x=>x.classList.remove('selected'));
+    b.classList.add('selected');selectedFont=b.dataset.font;
+  });
+});
+
+document.querySelectorAll('.temp-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.temp-btn').forEach(x=>x.classList.remove('selected'));
+    b.classList.add('selected');selectedTemp=parseFloat(b.dataset.temp);
   });
 });
 
@@ -576,11 +591,19 @@ tailorBtn.addEventListener('click',async()=>{
   try{
     const r=await fetch(`${API}/tailor/${resumeId}?email=${getEmail()}`,{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({jd_text:jdText.value,style:selectedStyle})
+      body:JSON.stringify({jd_text:jdText.value,style:selectedStyle,font:selectedFont,temperature:selectedTemp})
     });
     clearInterval(iv);
     if(!r.ok)throw new Error();
     const d=await r.json();tailoringId=d.tailoring_id;
+    // Show role title
+    if(d.role_title){document.getElementById('resultTitle').textContent='Tailored for: '+d.role_title}
+    // Show preview
+    if(d.tailored_summary_preview){
+      const pb=document.getElementById('previewBox');
+      pb.style.display='block';
+      pb.textContent='"'+d.tailored_summary_preview+'"';
+    }
     const before=Math.round(d.match_score_before.overall_score),after=Math.round(d.match_score_after.overall_score);
     showStep('stepResults');
     animateScore('scoreBefore',0,before,900);
