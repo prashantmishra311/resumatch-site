@@ -533,8 +533,10 @@ document.getElementById('downloadBtn').addEventListener('click',async()=>{
       if(cr.credits>0){
         const btn=document.getElementById('downloadBtn');btn.textContent='Downloading...';btn.disabled=true;
         try{
-          const r=await fetch(`${API}/render/${tailoringId}?email=${getEmail()}`);if(!r.ok)throw 0;
-          const bl=await r.blob(),u=URL.createObjectURL(bl),a=document.createElement('a');
+          const r=await fetch(`${API}/render/${tailoringId}?email=${getEmail()}`);
+          const bl=await r.blob();
+          if(bl.size<500){throw 0}
+          const u=URL.createObjectURL(bl),a=document.createElement('a');
           a.href=u;a.download='ResuMatch_Tailored_Resume.pdf';a.click();URL.revokeObjectURL(u);
           btn.textContent=`Downloaded! (${cr.credits-1} credits left)`;
           setTimeout(()=>{btn.textContent='Download tailored PDF';btn.disabled=false},3000);
