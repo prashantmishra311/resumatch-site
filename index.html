@@ -335,7 +335,7 @@ footer{border-top:0.5px solid var(--border-light);padding:40px 32px}
     </div>
 
     <div class="step" id="step2">
-      <div class="step-title">Paste the job description</div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><div class="step-title">Paste the job description</div><a href="#" onclick="showStep('step1');return false" style="font-size:13px;color:var(--accent);text-decoration:none">← Upload new resume</a></div>
       <div class="step-desc">Copy the full listing — responsibilities, requirements, everything.</div>
       <textarea class="jd-textarea" id="jdText" placeholder="Paste the complete job description here..."></textarea>
 
@@ -395,7 +395,8 @@ footer{border-top:0.5px solid var(--border-light);padding:40px 32px}
           <div class="pay-note">Secure payment via Razorpay. No signup needed.</div>
         </div>
         <button class="btn-app" id="downloadBtn">Download tailored PDF</button>
-        <button class="btn-secondary" id="newTailorBtn">Tailor for another job &#8594;</button>
+        <button class="btn-secondary" id="newTailorBtn">Tailor for another job →</button>
+        <a href="#" onclick="showStep('step1');document.getElementById('resultTitle').textContent='Your resume is ready';document.getElementById('previewBox').style.display='none';return false" style="display:block;text-align:center;margin-top:12px;font-size:13px;color:var(--text-muted);text-decoration:none">Upload a different resume</a>
       </div>
     </div>
   </div>
@@ -527,23 +528,38 @@ tailorBtn.addEventListener('click',async()=>{
 });
 
 document.getElementById('downloadBtn').addEventListener('click',async()=>{
-  if(currentUser){
+  const btn=document.getElementById('downloadBtn');
+  
+  // Try credit-based download first
+  if(currentUser && tailoringId){
     try{
-      const cr=await fetch(`${API}/credits?email=${getEmail()}`).then(r=>r.json());
-      if(cr.credits>0){
-        const btn=document.getElementById('downloadBtn');btn.textContent='Downloading...';btn.disabled=true;
-        try{
-          const r=await fetch(`${API}/render/${tailoringId}?email=${getEmail()}`);if(!r.ok)throw 0;
+      const cr=await fetch(`${API}/credits?email=${getEmail()}`);
+      const cred=await cr.json();
+      console.log('Credits:',cred,'TailoringID:',tailoringId,'Email:',getEmail());
+      if(cred.credits>0){
+        btn.textContent='Downloading...';btn.disabled=true;
+        const r=await fetch(`${API}/render/${tailoringId}?email=${getEmail()}`);
+        console.log('Render status:',r.status);
+        if(r.ok){
           const bl=await r.blob();
-          const u=URL.createObjectURL(bl),a=document.createElement('a');
-          a.href=u;a.download='ResuMatch_Tailored_Resume.pdf';a.click();URL.revokeObjectURL(u);
-          btn.textContent=`Downloaded! (${cr.credits-1} credits left)`;
-          setTimeout(()=>{btn.textContent='Download tailored PDF';btn.disabled=false},3000);
-        }catch(e){alert('Download failed.')}
+          console.log('Blob size:',bl.size);
+          if(bl.size>500){
+            const u=URL.createObjectURL(bl),a=document.createElement('a');
+            a.href=u;a.download='ResuMatch_Tailored_Resume.pdf';a.click();
+            URL.revokeObjectURL(u);
+            btn.textContent='Downloaded! ('+String(cred.credits-1)+' left)';
+            setTimeout(function(){btn.textContent='Download tailored PDF';btn.disabled=false},3000);
+            return;
+          }
+        }
+        btn.textContent='Download tailored PDF';btn.disabled=false;
+        alert('Download failed. Status: '+r.status);
         return;
       }
-    }catch(e){}
+    }catch(e){console.log('Credit download error:',e)}
   }
+  
+  // Fall through to payment options
   showPaymentOptions();
 });
 
